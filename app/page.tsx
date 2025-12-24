@@ -62,7 +62,7 @@ export default function Home() {
                   />
                 </div>
                 <p className="text-[#A0958F] text-xs font-bold uppercase tracking-widest mb-2">{product.name}</p>
-                <h4 className="text-3xl font-playfair font-bold text-[#FF7A21] mb-6">{product.price} <span className="text-[10px] text-[#A0958F]">BHD</span></h4>
+                <p className="text-3xl font-inter font-bold text-[#FF7A21] mb-6">{product.price} <span className="text-[10px] text-[#A0958F]">BHD</span></p>
                 <button
                   onClick={() => addItem({
                     name: product.name,

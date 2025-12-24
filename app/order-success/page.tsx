@@ -85,8 +85,10 @@ export default function OrderSuccessPage() {
                             className="bg-[#FFFBF7] p-6 rounded-xl border border-[#F2EDEA] text-left space-y-3"
                         >
                             <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-[#A0958F]">
-                                <span>Reference ID</span>
-                                <span className="text-[#1A1614]">#{orderInfo?.orderId || '----'}</span>
+                                <span>Reference Number</span>
+                                <span className="text-[#1A1614] select-all font-mono" title={String(orderInfo?.orderId || '')}>
+                                    #{(String(orderInfo?.orderId || '')).split('-')[0].toUpperCase()}
+                                </span>
                             </div>
                             <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-[#A0958F]">
                                 <span>Contact</span>

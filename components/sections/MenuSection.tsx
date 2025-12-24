@@ -3,14 +3,25 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MENU_DATA } from '@/lib/menu-data';
-import { Flame, Plus, Minus, ShoppingCart } from 'lucide-react';
+import { Flame, Plus, Minus, ShoppingCart, Search } from 'lucide-react';
 import { useCart } from '@/components/cart/CartProvider';
 
 export default function MenuSection() {
     const [activeCategory, setActiveCategory] = useState(MENU_DATA[0].title);
+    const [searchQuery, setSearchQuery] = useState('');
     const { addItem, updateQuantity, items } = useCart();
 
-    const filteredItems = MENU_DATA.find(cat => cat.title === activeCategory)?.items || [];
+    // Filter items by category and search query
+    let filteredItems;
+    if (searchQuery.trim()) {
+        // When searching, show results from ALL categories
+        filteredItems = MENU_DATA.flatMap(cat => cat.items).filter(item =>
+            item.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    } else {
+        // When not searching, show items from selected category only
+        filteredItems = MENU_DATA.find(cat => cat.title === activeCategory)?.items || [];
+    }
 
     const getItemQuantity = (name: string) => {
         return items.find(i => i.name === name)?.quantity || 0;
@@ -41,6 +52,34 @@ export default function MenuSection() {
                             Call to Order: <a href="tel:+918089001017" className="text-[#FF7A21] hover:underline font-bold">+91 8089001017</a>
                         </p>
                     </motion.div>
+
+                    {/* Search Bar */}
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.3 }}
+                        className="max-w-md mx-auto mb-8"
+                    >
+                        <div className="relative">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#A0958F]" size={18} />
+                            <input
+                                type="text"
+                                placeholder="Search dishes..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full pl-12 pr-4 py-3 rounded-full border-2 border-[#F2EDEA] bg-white text-[#1A1614] placeholder:text-[#A0958F] focus:border-[#FF7A21] focus:outline-none transition-colors text-sm"
+                            />
+                            {searchQuery && (
+                                <button
+                                    onClick={() => setSearchQuery('')}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#A0958F] hover:text-[#FF7A21] transition-colors text-xs font-bold"
+                                >
+                                    Clear
+                                </button>
+                            )}
+                        </div>
+                    </motion.div>
                 </div>
 
                 {/* Category Pills */}
@@ -69,10 +108,10 @@ export default function MenuSection() {
                             <motion.div
                                 key={item.name}
                                 layout
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                transition={{ duration: 0.3, delay: index * 0.05 }}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.15 }}
                                 className="bg-white p-8 rounded-2xl border border-[#F2EDEA] shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group relative"
                             >
                                 {/* Chef's Special Badge (Dummy check for variety) */}
@@ -85,9 +124,9 @@ export default function MenuSection() {
                                 )}
 
                                 <div className="flex justify-between items-start mb-4">
-                                    <h3 className="text-xl font-playfair font-bold text-[#1A1614] group-hover:text-[#FF7A21] transition-colors leading-snug">
+                                    <p className="text-xl font-inter font-semibold not-italic text-[#1A1614] group-hover:text-[#FF7A21] transition-colors leading-snug">
                                         {item.name}
-                                    </h3>
+                                    </p>
                                     <span className="text-lg font-bold text-[#FF7A21] whitespace-nowrap">{item.price} BHD</span>
                                 </div>
 

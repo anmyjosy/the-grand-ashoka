@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 import { X, MessageSquare, ExternalLink } from 'lucide-react';
@@ -7,11 +8,23 @@ import { X, MessageSquare, ExternalLink } from 'lucide-react';
 export default function WhatsAppQRModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
     const whatsappUrl = "https://wa.me/918089001017?text=Hi Grand Ashoka, I'd like to place an order.";
 
+    // Lock body scroll when modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen]);
+
     if (!isOpen) return null;
 
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 min-h-screen">
                 {/* Overlay */}
                 <motion.div
                     initial={{ opacity: 0 }}

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 import { useCart } from './CartProvider';
+import LocationPicker from './LocationPicker';
 import { ShoppingBag, X, Plus, Minus, Trash2, Send, ArrowRight, ArrowLeft, MapPin, User, Phone as PhoneIcon, CreditCard, CheckCircle2, ChevronRight, Check } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -55,7 +56,7 @@ export default function CartDrawer() {
             localStorage.setItem('lastOrderInfo', JSON.stringify({
                 name: formData.name,
                 phone: formData.phone,
-                orderId: data.id
+                orderId: data.reference_number || data.id
             }));
 
             // Redirect to Success Page
@@ -80,21 +81,19 @@ export default function CartDrawer() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsOpen(true)}
-                className="fixed bottom-6 right-6 z-50 bg-[#FF7A21] text-white p-4 rounded-full shadow-[0_20px_40px_-10px_rgba(255,122,33,0.3)] flex items-center group transition-all duration-300"
+                className="fixed bottom-6 right-6 z-50 bg-[#1A1614] hover:bg-[#FF7A21] text-white px-4 py-2.5 rounded-full shadow-[0_15px_30px_-10px_rgba(0,0,0,0.3)] hover:shadow-orange-500/30 flex items-center gap-2.5 group transition-all duration-300 border border-white/10"
             >
                 <div className="relative">
-                    <ShoppingBag size={24} />
+                    <ShoppingBag size={18} className="text-[#FF7A21] group-hover:text-white transition-colors" />
                     {totalCount > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-white text-[#FF7A21] text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-sm border border-orange-100">
+                        <span className="absolute -top-1.5 -right-1.5 bg-[#FF7A21] group-hover:bg-white text-white group-hover:text-[#FF7A21] text-[8px] font-black min-w-[15px] h-[15px] rounded-full flex items-center justify-center shadow-lg border border-[#1A1614] group-hover:border-[#FF7A21] transition-all">
                             {totalCount}
                         </span>
                     )}
                 </div>
-                <div className="max-w-0 group-hover:max-w-xs transition-all duration-500 ease-in-out overflow-hidden">
-                    <span className="pl-3 pr-1 whitespace-nowrap text-sm font-bold uppercase tracking-widest">
-                        View Cart
-                    </span>
-                </div>
+                <span className="whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.15em] text-white/90 group-hover:text-white transition-colors">
+                    View Cart
+                </span>
             </motion.button>
 
             {/* Drawer Overlay */}
@@ -123,11 +122,12 @@ export default function CartDrawer() {
                                             <ShoppingBag size={20} />
                                         </div>
                                         <div>
-                                            <h2 className="text-xl font-playfair font-bold text-[#1A1614]">
+                                            <p className="text-xl font-inter font-semibold text-[#1A1614]">
                                                 {step === 'cart' && 'Your Order'}
                                                 {step === 'details' && 'Delivery Info'}
                                                 {step === 'payment' && 'Confirm & Pay'}
-                                            </h2>
+                                                {step === 'success' && 'Order Placed'}
+                                            </p>
                                         </div>
                                     </div>
                                     <button
@@ -159,7 +159,7 @@ export default function CartDrawer() {
                             </div>
 
                             {/* Items List */}
-                            <div className={`flex-1 p-6 space-y-6 ${(step === 'cart' || step === 'payment') ? 'overflow-y-auto' : 'overflow-visible'}`}>
+                            <div className="flex-1 p-6 space-y-6 overflow-y-auto custom-scrollbar">
                                 {step === 'cart' && (
                                     items.length === 0 ? (
                                         <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
@@ -167,7 +167,7 @@ export default function CartDrawer() {
                                                 <ShoppingBag size={40} />
                                             </div>
                                             <div>
-                                                <h3 className="text-lg font-playfair font-bold text-[#1A1614]">Your cart is empty</h3>
+                                                <h3 className="text-lg font-inter font-semibold text-[#1A1614]">Your cart is empty</h3>
                                                 <p className="text-sm text-[#A0958F]">Add delicious items from our menu to start your order.</p>
                                             </div>
                                             <button
@@ -185,9 +185,9 @@ export default function CartDrawer() {
                                             {items.map((item) => (
                                                 <div key={item.name} className="flex justify-between items-start group">
                                                     <div className="space-y-1">
-                                                        <h4 className="font-playfair font-bold text-[#1A1614] group-hover:text-[#FF7A21] transition-colors">
+                                                        <p className="font-inter font-semibold text-[#1A1614] group-hover:text-[#FF7A21] transition-colors">
                                                             {item.name}
-                                                        </h4>
+                                                        </p>
                                                         <p className="text-sm font-bold text-[#FF7A21]">{item.price} BHD</p>
                                                     </div>
                                                     <div className="flex items-center gap-4">
@@ -250,14 +250,28 @@ export default function CartDrawer() {
                                                     />
                                                 </div>
                                             </div>
+                                            <div className="space-y-3">
+                                                <label className="text-[10px] font-bold uppercase tracking-widest text-[#A0958F]">Delivery Location</label>
+                                                <div className="bg-white p-2 rounded-sm border border-[#F2EDEA]">
+                                                    <LocationPicker
+                                                        onLocationSelect={(lat: number, lng: number, address?: string) => {
+                                                            const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
+                                                            setFormData(prev => ({
+                                                                ...prev,
+                                                                address: address ? `${address}\n\nMap: ${mapsLink}` : `${prev.address.split('\n\nMap:')[0]}\n\nMap: ${mapsLink}`
+                                                            }));
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
                                             <div className="space-y-1">
-                                                <label className="text-[10px] font-bold uppercase tracking-widest text-[#A0958F]">Delivery Address</label>
+                                                <label className="text-[10px] font-bold uppercase tracking-widest text-[#A0958F]">Complete Address</label>
                                                 <div className="relative">
                                                     <MapPin className="absolute left-3 top-3 text-[#A0958F]" size={16} />
                                                     <textarea
                                                         value={formData.address}
                                                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                                        placeholder="Flat/Villa, Road, Block..."
+                                                        placeholder="Flat/Villa, Road, Block... (Location from map will appear here)"
                                                         rows={3}
                                                         className="w-full pl-10 pr-4 py-3 bg-[#F2EDEA] border-none rounded-sm text-sm text-[#1A1614] focus:ring-2 focus:ring-[#FF7A21] transition-all resize-none placeholder:text-[#A0958F]/60"
                                                     />
@@ -274,7 +288,7 @@ export default function CartDrawer() {
                                                 <div className="w-12 h-12 rounded-full bg-[#22C55E]/10 flex items-center justify-center text-[#22C55E] mx-auto">
                                                     <CreditCard size={28} />
                                                 </div>
-                                                <h4 className="text-xl font-playfair font-bold text-[#1A1614]">Scan & Pay</h4>
+                                                <h4 className="text-xl font-inter font-semibold text-[#1A1614]">Scan & Pay</h4>
                                                 <p className="text-[10px] font-bold uppercase tracking-widest text-[#A0958F]">Simulated Payment</p>
                                             </div>
 
@@ -347,7 +361,7 @@ export default function CartDrawer() {
                                             <CheckCircle2 size={64} />
                                         </motion.div>
                                         <div className="space-y-2">
-                                            <h2 className="text-3xl font-playfair font-bold text-[#1A1614]">Thank You!</h2>
+                                            <h2 className="text-3xl font-inter font-semibold text-[#1A1614]">Thank You!</h2>
                                             <p className="text-sm text-[#A0958F]">Your order has been placed successfully.</p>
                                         </div>
                                         <div className="p-6 bg-[#FFFBF7] rounded-xl border border-[#F2EDEA] w-full space-y-3">
@@ -372,7 +386,7 @@ export default function CartDrawer() {
                                 <div className="p-6 bg-[#FFFBF7] border-t border-[#F2EDEA] space-y-4">
                                     <div className="flex justify-between items-center">
                                         <span className="text-[#A0958F] font-bold uppercase tracking-widest text-xs">Total Amount</span>
-                                        <span className="text-2xl font-playfair font-bold text-[#1A1614]">{totalPrice.toFixed(3)} BHD</span>
+                                        <span className="text-2xl font-inter font-semibold text-[#1A1614]">{totalPrice.toFixed(3)} BHD</span>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <button
