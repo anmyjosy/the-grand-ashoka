@@ -12,8 +12,8 @@ export default function VapiWidget() {
             {/* @ts-ignore */}
             <vapi-widget
                 style={{ transform: 'scale(0.9)', transformOrigin: 'bottom left' }}
-                public-key={process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY || ""}
-                assistant-id={process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID || ""}
+                public-key="7ebb13bd-c25b-4589-9ec5-fcf4c15522f0"
+                assistant-id="be00d435-bd4c-40bb-8c79-22dac5c54769"
                 mode="voice"
                 theme="dark"
                 base-bg-color="#1A1614"
