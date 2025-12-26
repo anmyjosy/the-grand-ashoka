@@ -35,6 +35,7 @@ export const metadata: Metadata = {
 
 import { CartProvider } from '@/components/cart/CartProvider';
 import CartDrawer from '@/components/cart/CartDrawer';
+import VapiWidget from '@/components/VapiWidget';
 
 export default function RootLayout({
   children,
@@ -49,6 +50,7 @@ export default function RootLayout({
           {children}
           <CartDrawer />
           <Footer />
+          <VapiWidget />
         </CartProvider>
       </body>
     </html>

@@ -81,17 +81,17 @@ export default function CartDrawer() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsOpen(true)}
-                className="fixed bottom-6 right-6 z-50 bg-[#1A1614] hover:bg-[#FF7A21] text-white px-4 py-2.5 rounded-full shadow-[0_15px_30px_-10px_rgba(0,0,0,0.3)] hover:shadow-orange-500/30 flex items-center gap-2.5 group transition-all duration-300 border border-white/10"
+                className="fixed bottom-6 right-6 z-50 bg-[#1A1614] hover:bg-[#FF7A21] text-white px-5 py-3.5 rounded-2xl shadow-[0_15px_30px_-10px_rgba(0,0,0,0.3)] hover:shadow-orange-500/30 flex items-center gap-3 group transition-all duration-300 border border-white/10"
             >
                 <div className="relative">
-                    <ShoppingBag size={18} className="text-[#FF7A21] group-hover:text-white transition-colors" />
+                    <ShoppingBag size={20} className="text-[#FF7A21] group-hover:text-white transition-colors" />
                     {totalCount > 0 && (
-                        <span className="absolute -top-1.5 -right-1.5 bg-[#FF7A21] group-hover:bg-white text-white group-hover:text-[#FF7A21] text-[8px] font-black min-w-[15px] h-[15px] rounded-full flex items-center justify-center shadow-lg border border-[#1A1614] group-hover:border-[#FF7A21] transition-all">
+                        <span className="absolute -top-1.5 -right-1.5 bg-[#FF7A21] group-hover:bg-white text-white group-hover:text-[#FF7A21] text-[9px] font-black min-w-[16px] h-[16px] rounded-full flex items-center justify-center shadow-lg border border-[#1A1614] group-hover:border-[#FF7A21] transition-all">
                             {totalCount}
                         </span>
                     )}
                 </div>
-                <span className="whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.15em] text-white/90 group-hover:text-white transition-colors">
+                <span className="whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.15em] text-white/90 group-hover:text-white transition-colors">
                     View Cart
                 </span>
             </motion.button>
